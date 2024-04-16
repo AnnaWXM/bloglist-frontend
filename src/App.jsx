@@ -102,6 +102,11 @@ const App = () => {
     }
   }
 
+  const handleLogout = () => {
+    window.localStorage.removeItem('loggedBlogappUser');
+    setUser(null);
+  };
+
   const handleBlogChange = (event) => {
     setNewBlog(event.target.value);
   };
@@ -206,6 +211,7 @@ const App = () => {
       loginForm() :
       <div>
         <p>{user.name} logged-in</p>
+        <button onClick={handleLogout}>Logout</button>
         {blogForm()}
         <ul>
         {blogsToShow.map((blog, i) =>
