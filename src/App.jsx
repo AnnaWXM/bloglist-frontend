@@ -21,12 +21,62 @@ const App = () => {
       })
   }, [])
 
+  const addBlog = (event) => {
+    event.preventDefault();
+    const existBlog = blogs.find((blog) => blog.url === newUrl)
+    if (existBlog) {
+      const confirmation = window.confirm('This blog already exists, replace the old information with a new one?');
+      if (confirmation) {
+        const updateBlog = { ...existBlog, author: newAuthor, title: newTitle }
+        blogService
+          .update(existBlog._id, updateBlog)
+          .then(returnedBlog => {
+            const updateBlogs = blogs.map(blog => (blog._id === returnedBlog._id ? returnedBlog : blog))
+            setBlogs(updateBlogs)
+            setNewAuthor('')
+            setNewTitle('')
+            setLikes(0)
+          })
+          .catch(error => {
+            setMessage(`Information of ${newUrl} has been removed from server`)
+            setIsError(true)
+          })
+        setMessage(`${existBlog.url} information changed`)
+      }
+    }
+    else {
+      let idint;
+      if (blogs.length == 0) {
+        idint = 1
+      }
+      else {
+        idint = blogs.length + 1
+      }
+      let existId = blogs.find((blog) => blog._id == idint)
+      while (existId) {
+        idint = idint + 1
+        existId = blogs.find((blog) => blog._id == idint)
+      }
+      const newBlog = { title: newTitle, author: newAuthor, _id: idint.toString(), url: newUrl };
+      blogService
+        .create(newBlog)
+        .then(returnedBlog => {
+          setPlogs(blogs.concat(returnedBlog))
+          setNewTitle('')
+          setNewAuthor('')
+          setNewUrl('')
+          setLikes(0)
+        })
+      setMessage(`${newTitle} blog added`)
+    }
+  }
+
   useEffect(() => {
-    const loggedUserJSON = window.localStorage.getItem('loggedNoteappUser')
+    const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
       setUser(user)
-      noteService.setToken(user.token)
+      blogService.setToken(user.token)
     }
   }, [])
 
@@ -38,7 +88,7 @@ const App = () => {
         username, password,
       })
       window.localStorage.setItem(
-        'loggedNoteappUser', JSON.stringify(user)
+        'loggedBlogappUser', JSON.stringify(user)
       )
       blogService.setToken(user.token)
       setUser(user)
@@ -51,6 +101,10 @@ const App = () => {
       }, 5000)
     }
   }
+
+  const handleBlogChange = (event) => {
+    setNewBlog(event.target.value);
+  };
 
   const loginForm = () => (
     <form onSubmit={handleLogin}>
@@ -115,21 +169,21 @@ const App = () => {
     );
   }
 
-  const Blogs = ({ blogs, handleLike, deletePerson }) => {
+  const Blogs = ({ blogs, handleLike, deletePlog }) => {
     return (
       <ul>
-        {blogs.map(person => (
-          <li className='person' key={person._id}>
-          <div className="person-info">
-            <div className="person-details">
-              <span className="person-title">{person.title}</span>
-              <span className="person-author">{person.author}</span>
-              <span className="person-url">{person.url}</span>
+        {blogs.map(plog => (
+          <li className='plog' key={plog._id}>
+          <div className="plog-info">
+            <div className="plog-details">
+              <span className="plog-title">{plog.title}</span>
+              <span className="plog-author">{plog.author}</span>
+              <span className="plog-url">{plog.url}</span>
             </div>
-            <div className="person-actions">
-              <button className="like-button" onClick={() => handleLike(person._id)}>Like it</button>
-              <span className="likes-count">Likes: {person.likes}</span>
-              <button className="delete-button" onClick={() => deletePerson(person._id)}>Delete</button>
+            <div className="plog-actions">
+              <button className="like-button" onClick={() => handleLike(plog._id)}>Like it</button>
+              <span className="likes-count">Likes: {plog.likes}</span>
+              <button className="delete-button" onClick={() => deletePlog(plog._id)}>Delete</button>
             </div>
           </div>
         </li>
@@ -153,10 +207,7 @@ const App = () => {
       <div>
         <p>{user.name} logged-in</p>
         {blogForm()}
-      </div>
-    }
-
-      <ul>
+        <ul>
         {blogsToShow.map((blog, i) =>
           <Blog
             key={i}
@@ -165,6 +216,10 @@ const App = () => {
           />
         )}
       </ul>
+      </div>
+    }
+
+
 
     </div>
   )
