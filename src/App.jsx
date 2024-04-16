@@ -110,10 +110,11 @@ const App = () => {
       )
       blogService.setToken(user.token)
       setUser(user)
+      setErrorMessage(null);
       setUsername('')
       setPassword('')
     } catch (exception) {
-      setErrorMessage('Wrong credentials')
+      setErrorMessage('Wrong username or password')
       setTimeout(() => {
         setErrorMessage(null)
       }, 5000)
@@ -126,7 +127,8 @@ const App = () => {
   };
 
   const handleBlogChange = (event) => {
-    setNewBlog(event.target.value);
+    const { name, value } = event.target;
+    setNewBlog({ ...newBlog, [name]: value });
   };
 
   const loginForm = () => (
@@ -203,10 +205,7 @@ const App = () => {
       return null;
     }
 
-    let className = 'notification'
-    if (type === 'error') {
-      className = 'error'
-    }
+    const className = type === 'error' ? 'error' : 'notification';
 
     return (
       <div className={className}>
@@ -245,8 +244,7 @@ const App = () => {
   return (
     <div>
       <h1>Blogs</h1>
-
-      <Notification message={errorMessage} />
+      <Notification message={errorMessage} type="error" />
 
       {user === null ?
       loginForm() :
