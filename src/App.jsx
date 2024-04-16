@@ -5,7 +5,10 @@ import loginService from './services/login'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
-  const [newBlog, setNewBlog] = useState('')
+  const [newBlog, setNewBlog] = useState({
+    title: '',
+    author: '',
+    url: ''})
   const [showAll, setShowAll] = useState(true)
   const [errorMessage, setErrorMessage] = useState(null)
 
@@ -21,6 +24,21 @@ const App = () => {
       })
   }, [])
 
+  const addBlog = async (event) => {
+    event.preventDefault();
+    try {
+      const createdBlog = await blogService.create(newBlog);
+      setBlogs([...blogs, createdBlog]);
+      setNewBlog({
+        title: '',
+        author: '',
+        url: ''
+      });
+    } catch (error) {
+      console.error('Error creating blog:', error.message);
+    }
+  };
+  /*
   const addBlog = (event) => {
     event.preventDefault();
     const existBlog = blogs.find((blog) => blog.url === newUrl)
@@ -70,7 +88,7 @@ const App = () => {
       setMessage(`${newTitle} blog added`)
     }
   }
-
+*/
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
     if (loggedUserJSON) {
@@ -136,13 +154,36 @@ const App = () => {
   )
 
   const blogForm = () => (
-    <form onSubmit={addBlog}>
-      <input
-        value={newBlog}
-        onChange={handleBlogChange}
-      />
-      <button type="submit">save</button>
-    </form>
+          <form onSubmit={addBlog}>
+            <div>
+              Title:
+              <input
+                type="text"
+                name="title"
+                value={newBlog.title}
+                onChange={handleBlogChange}
+              />
+            </div>
+            <div>
+              Author:
+              <input
+                type="text"
+                name="author"
+                value={newBlog.author}
+                onChange={handleBlogChange}
+              />
+            </div>
+            <div>
+              URL:
+              <input
+                type="text"
+                name="url"
+                value={newBlog.url}
+                onChange={handleBlogChange}
+              />
+            </div>
+            <button type="submit">Create Blog</button>
+          </form>
   )
 
   const Notification = ({ message, type }) => {
