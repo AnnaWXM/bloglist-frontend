@@ -15,6 +15,7 @@ const App = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
+  const [createBlogVisible, setCreateBlogVisible] = useState(false)
 
 
   useEffect(() => {
@@ -155,8 +156,16 @@ const App = () => {
     </form>
   )
 
-  const blogForm = () => (
-          <form onSubmit={addBlog}>
+  const blogForm = () => {
+    const hideWhenVisible = { display: createBlogVisible ? 'none' : '' }
+    const showWhenVisible = { display: createBlogVisible ? '' : 'none' }
+    return(
+      <div>
+        <div style={hideWhenVisible}>
+          <button onClick={() => setCreateBlogVisible(true)}>create blog</button>
+        </div>
+        <div style={showWhenVisible}>
+        <form onSubmit={addBlog}>
             <div>
               Title:
               <input
@@ -186,7 +195,11 @@ const App = () => {
             </div>
             <button type="submit">Create Blog</button>
           </form>
-  )
+          <button onClick={() => setCreateBlogVisible(false)}>cancel</button>
+        </div>
+      </div>
+    )
+  }
 
   const Notification = ({ message, type }) => {
     const [isVisible, setIsVisible] = useState(false);
