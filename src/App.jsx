@@ -16,6 +16,7 @@ const App = () => {
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
   const [createBlogVisible, setCreateBlogVisible] = useState(false)
+  const [showDetails, setShowDetails] = useState(false);
 
 
   useEffect(() => {
@@ -80,7 +81,7 @@ const App = () => {
       blogService
         .create(newBlog)
         .then(returnedBlog => {
-          setPlogs(blogs.concat(returnedBlog))
+          setblogs(blogs.concat(returnedBlog))
           setNewTitle('')
           setNewAuthor('')
           setNewUrl('')
@@ -131,6 +132,28 @@ const App = () => {
     const { name, value } = event.target;
     setNewBlog({ ...newBlog, [name]: value });
   };
+
+  const handleLike = (blogID) => {
+    setBlogs(prevBlogs => prevBlogs.map(blog => {
+      if(blog._id === blogID){
+        return{...blog, likes: blog.likes +1 }
+      }
+      return blog
+    }))
+  };
+
+  const deleteBlog = id => {
+    const confirmation = window.confirm('Delete this blog?');
+    if (confirmation) {
+      blogService
+        .remove(id)
+        .then(() => {
+          setBlogs(blogs.filter(blog => blog.id !== id))
+        })
+      setMessage(`the blog information deleted`)
+    }
+  }
+
 
   const loginForm = () => (
     <form onSubmit={handleLogin}>
@@ -227,21 +250,27 @@ const App = () => {
     );
   }
 
-  const Blogs = ({ blogs, handleLike, deletePlog }) => {
+  const Blogs = ({ blogs, handleLike, deleteBlog }) => {
+    const toggleDetails = () => {
+      setShowDetails(!showDetails);
+    };
     return (
       <ul>
-        {blogs.map(plog => (
-          <li className='plog' key={plog._id}>
-          <div className="plog-info">
-            <div className="plog-details">
-              <span className="plog-title">{plog.title}</span>
-              <span className="plog-author">{plog.author}</span>
-              <span className="plog-url">{plog.url}</span>
+        {blogs.map(blog => (
+          <li className='blog' key={blog._id}>
+          <div className="blog-info">
+            <div className="blog-details">
+              <span className="blog-title">{blog.title}</span>
+              {showDetails && <span className="blog-author">{blog.author}</span>}
+              {showDetails && <span className="blog-url">{blog.url}</span>}
             </div>
-            <div className="plog-actions">
-              <button className="like-button" onClick={() => handleLike(plog._id)}>Like it</button>
-              <span className="likes-count">Likes: {plog.likes}</span>
-              <button className="delete-button" onClick={() => deletePlog(plog._id)}>Delete</button>
+            <div className="blog-actions">
+              {showDetails &&<button className="like-button" onClick={() => handleLike(blog._id)}>Like it</button>}
+              {showDetails &&<span className="likes-count">Likes: {blog.likes}</span>}
+              {showDetails &&<button className="delete-button" onClick={() => deleteBlog(blog._id)}>Delete</button>}
+              <button className="toggle-details-button" onClick={toggleDetails}>
+                {showDetails ? 'Hide Details' : 'Show Details'}
+              </button>
             </div>
           </div>
         </li>
@@ -250,6 +279,7 @@ const App = () => {
       </ul>
     );
   };
+
   const blogsToShow = showAll
     ? blogs
     : blogs.filter(blogs => blogs.title.toLowerCase().includes(filter.toLowerCase()))
@@ -258,7 +288,6 @@ const App = () => {
     <div>
       <h1>Blogs</h1>
       <Notification message={errorMessage} type="error" />
-
       {user === null ?
       loginForm() :
       <div>
@@ -266,14 +295,15 @@ const App = () => {
         <button onClick={handleLogout}>Logout</button>
         {blogForm()}
         <ul>
-        {blogsToShow.map((blog, i) =>
-          <Blog
-            key={i}
-            blog={blog}
-            toggleImportance={() => toggleImportanceOf(blog.id)}
-          />
-        )}
-      </ul>
+          {blogsToShow.map((blog, i) =>
+            <Blogs
+              key={i}
+              blogs={[blog]}
+              handleLike={handleLike}
+              deleteBlog={deleteBlog}
+            />
+          )}
+        </ul>
       </div>
     }
 

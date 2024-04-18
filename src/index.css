@@ -3,7 +3,7 @@ h2 {
     font-style: italic;
   }
 
-  .person {
+  .blog {
     color: grey;
     padding-top: 5px;
     font-size: 15px;
@@ -30,18 +30,18 @@ h2 {
     margin-bottom: 10px;
   }
 
-  .person-info {
+  .blog-info {
     display: flex;
     justify-content: space-between;
     align-items: center;
   }
 
-  .person-details {
+  .blog-details {
     flex: 1;
     margin-right: 10px;
   }
 
-  .person-actions {
+  .blog-actions {
     display: flex;
     align-items: center;
   }
@@ -57,17 +57,17 @@ h2 {
   }
 
   /* Optionally, you can style individual spans for title, author, and url */
-  .person-title {
+  .blog-title {
     color: black;
     font-weight: bold;
   }
 
-  .person-author {
+  .blog-author {
     color: gray;
     font-style: italic;
   }
 
-  .person-url {
+  .blog-url {
     color: blue;
     text-decoration: underline;
   }
