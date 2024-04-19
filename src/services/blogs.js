@@ -32,4 +32,10 @@ const like = async (id) => {
   return response.data;
 };
 
-export default { getAll, create, update,like, setToken }
+const remove = async (id) => {
+  console.log(id)
+  const request = axios.delete(`${baseUrl}/${id}`)
+  return request.then(response => response.data)
+}
+
+export default { getAll, create, update,like,remove, setToken }

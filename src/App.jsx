@@ -16,7 +16,8 @@ const App = () => {
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
   const [createBlogVisible, setCreateBlogVisible] = useState(false)
-  const [showDetails, setShowDetails] = useState(false);
+  const [showDetails, setShowDetails] = useState(false)
+  const [message, setMessage] = useState('message recevied.')
 
 
   useEffect(() => {
@@ -149,7 +150,7 @@ const App = () => {
     }
   };
 
-  const deleteBlog = id => {
+  const deleteBlog = (id) => {
     const confirmation = window.confirm('Delete this blog?');
     if (confirmation) {
       blogService
@@ -306,7 +307,7 @@ const App = () => {
               key={blog.id}
               blog={blog}
               handleLike={() => handleLike(blog.id)}
-              deleteBlog={deleteBlog}
+              deleteBlog={() => deleteBlog(blog.id)}
             />
           )}
         </ul>
