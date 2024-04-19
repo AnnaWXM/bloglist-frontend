@@ -27,10 +27,10 @@ const update = (id, newObject) => {
 }
 
 const like = async (id) => {
-  const response = await axios.patch(`${baseUrl}/${id}`);
+  const response = await axios.patch(`${baseUrl}/${id}`)
 
-  return response.data;
-};
+  return response.data
+}
 
 const remove = async (id) => {
   console.log(id)

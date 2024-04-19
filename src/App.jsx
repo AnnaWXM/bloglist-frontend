@@ -2,13 +2,14 @@ import { useState, useEffect } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
+import PropTypes from 'prop-types'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [newBlog, setNewBlog] = useState({
     title: '',
     author: '',
-    url: ''})
+    url: '' })
   const [showAll, setShowAll] = useState(true)
   const [errorMessage, setErrorMessage] = useState(null)
 
@@ -23,25 +24,25 @@ const App = () => {
   useEffect(() => {
     blogService
       .getAll().then(initialBlogs => {
-        const sortedBlogs = initialBlogs.sort((a, b) => b.likes - a.likes);
-        setBlogs(sortedBlogs);
+        const sortedBlogs = initialBlogs.sort((a, b) => b.likes - a.likes)
+        setBlogs(sortedBlogs)
       })
   }, [])
 
   const addBlog = async (event) => {
-    event.preventDefault();
+    event.preventDefault()
     try {
-      const createdBlog = await blogService.create(newBlog);
-      setBlogs([...blogs, createdBlog]);
+      const createdBlog = await blogService.create(newBlog)
+      setBlogs([...blogs, createdBlog])
       setNewBlog({
         title: '',
         author: '',
         url: ''
-      });
+      })
     } catch (error) {
-      console.error('Error creating blog:', error.message);
+      console.error('Error creating blog:', error.message)
     }
-  };
+  }
   /*
   const addBlog = (event) => {
     event.preventDefault();
@@ -114,7 +115,7 @@ const App = () => {
       )
       blogService.setToken(user.token)
       setUser(user)
-      setErrorMessage(null);
+      setErrorMessage(null)
       setUsername('')
       setPassword('')
     } catch (exception) {
@@ -126,40 +127,44 @@ const App = () => {
   }
 
   const handleLogout = () => {
-    window.localStorage.removeItem('loggedBlogappUser');
-    setUser(null);
-  };
+    window.localStorage.removeItem('loggedBlogappUser')
+    setUser(null)
+  }
 
   const handleBlogChange = (event) => {
-    const { name, value } = event.target;
-    setNewBlog({ ...newBlog, [name]: value });
-  };
+    const { name, value } = event.target
+    setNewBlog({ ...newBlog, [name]: value })
+  }
 
   const handleLike = async (blogID) => {
 
     try {
-      const updatedBlog = await blogService.like(blogID);
+      const updatedBlog = await blogService.like(blogID)
 
       setBlogs(prevBlogs =>
         prevBlogs.map(blog =>
           blog._id === blogID ? { ...blog, likes: updatedBlog.likes } : blog
         )
-      );
+      )
     } catch (error) {
-      console.error('Error updating like:', error.message);
+      console.error('Error updating like:', error.message)
     }
-  };
+  }
 
   const deleteBlog = (id) => {
-    const confirmation = window.confirm('Delete this blog?');
+    const confirmation = window.confirm('Delete this blog?')
     if (confirmation) {
       blogService
         .remove(id)
         .then(() => {
           setBlogs(blogs.filter(blog => blog.id !== id))
         })
-      setMessage(`the blog information deleted`)
+      setMessage('the blog information deleted')
     }
+  }
+
+  deleteBlog.propTypes = {
+    id:PropTypes.string.isRequired
   }
 
 
@@ -167,7 +172,7 @@ const App = () => {
     <form onSubmit={handleLogin}>
       <div>
         username
-          <input
+        <input
           type="text"
           value={username}
           name="Username"
@@ -176,7 +181,7 @@ const App = () => {
       </div>
       <div>
         password
-          <input
+        <input
           type="password"
           value={password}
           name="Password"
@@ -187,6 +192,8 @@ const App = () => {
     </form>
   )
 
+
+
   const blogForm = () => {
     const hideWhenVisible = { display: createBlogVisible ? 'none' : '' }
     const showWhenVisible = { display: createBlogVisible ? '' : 'none' }
@@ -196,7 +203,7 @@ const App = () => {
           <button onClick={() => setCreateBlogVisible(true)}>create blog</button>
         </div>
         <div style={showWhenVisible}>
-        <form onSubmit={addBlog}>
+          <form onSubmit={addBlog}>
             <div>
               Title:
               <input
@@ -233,37 +240,37 @@ const App = () => {
   }
 
   const Notification = ({ message, type }) => {
-    const [isVisible, setIsVisible] = useState(false);
+    const [isVisible, setIsVisible] = useState(false)
 
     useEffect(() => {
       if (message) {
-        setIsVisible(true);
+        setIsVisible(true)
         const timer = setTimeout(() => {
-          setIsVisible(false);
-        }, 3000);
-        return () => clearTimeout(timer);
+          setIsVisible(false)
+        }, 3000)
+        return () => clearTimeout(timer)
       }
-    }, [message]);
+    }, [message])
 
     if (!isVisible) {
-      return null;
+      return null
     }
 
-    const className = type === 'error' ? 'error' : 'notification';
+    const className = type === 'error' ? 'error' : 'notification'
 
     return (
       <div className={className}>
         {message}
       </div>
-    );
+    )
   }
 
   const Blogs = ({ blog, handleLike, deleteBlog }) =>  {
-    console.log("Blog ID:", blog.id);
+    console.log('Blog ID:', blog.id)
 
     const toggleDetails = () => {
-      setShowDetails(!showDetails);
-    };
+      setShowDetails(!showDetails)
+    }
 
     return (
       <li className='blog'>
@@ -283,12 +290,13 @@ const App = () => {
           </div>
         </div>
       </li>
-    );
-  };
+    )
+  }
 
 
   const blogsToShow = showAll
     ? blogs
+    // eslint-disable-next-line no-undef
     : blogs.filter(blogs => blogs.title.toLowerCase().includes(filter.toLowerCase()))
 
   return (
@@ -296,23 +304,23 @@ const App = () => {
       <h1>Blogs</h1>
       <Notification message={errorMessage} type="error" />
       {user === null ?
-      loginForm() :
-      <div>
-        <p>{user.name} logged-in</p>
-        <button onClick={handleLogout}>Logout</button>
-        {blogForm()}
-        <ul>
-          {blogsToShow.map(blog =>
-            <Blogs
-              key={blog.id}
-              blog={blog}
-              handleLike={() => handleLike(blog.id)}
-              deleteBlog={() => deleteBlog(blog.id)}
-            />
-          )}
-        </ul>
-      </div>
-    }
+        loginForm() :
+        <div>
+          <p>{user.name} logged-in</p>
+          <button onClick={handleLogout}>Logout</button>
+          {blogForm()}
+          <ul>
+            {blogsToShow.map(blog =>
+              <Blogs
+                key={blog.id}
+                blog={blog}
+                handleLike={() => handleLike(blog.id)}
+                deleteBlog={() => deleteBlog(blog.id)}
+              />
+            )}
+          </ul>
+        </div>
+      }
 
 
 
