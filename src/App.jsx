@@ -133,13 +133,19 @@ const App = () => {
     setNewBlog({ ...newBlog, [name]: value });
   };
 
-  const handleLike = (blogID) => {
-    setBlogs(prevBlogs => prevBlogs.map(blog => {
-      if(blog._id === blogID){
-        return{...blog, likes: blog.likes +1 }
-      }
-      return blog
-    }))
+  const handleLike = async (blogID) => {
+
+    try {
+      const updatedBlog = await blogService.like(blogID);
+
+      setBlogs(prevBlogs =>
+        prevBlogs.map(blog =>
+          blog._id === blogID ? { ...blog, likes: updatedBlog.likes } : blog
+        )
+      );
+    } catch (error) {
+      console.error('Error updating like:', error.message);
+    }
   };
 
   const deleteBlog = id => {
@@ -250,35 +256,34 @@ const App = () => {
     );
   }
 
-  const Blogs = ({ blogs, handleLike, deleteBlog }) => {
+  const Blogs = ({ blog, handleLike, deleteBlog }) =>  {
+    console.log("Blog ID:", blog.id);
+
     const toggleDetails = () => {
       setShowDetails(!showDetails);
     };
-    return (
-      <ul>
-        {blogs.map(blog => (
-          <li className='blog' key={blog._id}>
-          <div className="blog-info">
-            <div className="blog-details">
-              <span className="blog-title">{blog.title}</span>
-              {showDetails && <span className="blog-author">{blog.author}</span>}
-              {showDetails && <span className="blog-url">{blog.url}</span>}
-            </div>
-            <div className="blog-actions">
-              {showDetails &&<button className="like-button" onClick={() => handleLike(blog._id)}>Like it</button>}
-              {showDetails &&<span className="likes-count">Likes: {blog.likes}</span>}
-              {showDetails &&<button className="delete-button" onClick={() => deleteBlog(blog._id)}>Delete</button>}
-              <button className="toggle-details-button" onClick={toggleDetails}>
-                {showDetails ? 'Hide Details' : 'Show Details'}
-              </button>
-            </div>
-          </div>
-        </li>
 
-        ))}
-      </ul>
+    return (
+      <li className='blog'>
+        <div className="blog-info">
+          <div className="blog-details">
+            <span className="blog-title">{blog.title}</span>
+            {showDetails && <span className="blog-author">{blog.author}</span>}
+            {showDetails && <span className="blog-url">{blog.url}</span>}
+          </div>
+          <div className="blog-actions">
+            {showDetails &&<button className="like-button" onClick={() => handleLike(blog)}>Like it</button>}
+            {showDetails &&<span className="likes-count">Likes: {blog.likes}</span>}
+            {showDetails &&<button className="delete-button" onClick={() => deleteBlog(blog._id)}>Delete</button>}
+            <button className="toggle-details-button" onClick={toggleDetails}>
+              {showDetails ? 'Hide Details' : 'Show Details'}
+            </button>
+          </div>
+        </div>
+      </li>
     );
   };
+
 
   const blogsToShow = showAll
     ? blogs
@@ -295,11 +300,11 @@ const App = () => {
         <button onClick={handleLogout}>Logout</button>
         {blogForm()}
         <ul>
-          {blogsToShow.map((blog, i) =>
+          {blogsToShow.map(blog =>
             <Blogs
-              key={i}
-              blogs={[blog]}
-              handleLike={handleLike}
+              key={blog.id}
+              blog={blog}
+              handleLike={() => handleLike(blog.id)}
               deleteBlog={deleteBlog}
             />
           )}

@@ -1,5 +1,5 @@
 import axios from 'axios'
-const baseUrl = '/api/blogs'
+const baseUrl = 'http://localhost:3003/api/blogs'
 
 let token = null
 
@@ -26,4 +26,10 @@ const update = (id, newObject) => {
   return request.then(response => response.data)
 }
 
-export default { getAll, create, update, setToken }
+const like = async (id) => {
+  const response = await axios.patch(`${baseUrl}/${id}`);
+
+  return response.data;
+};
+
+export default { getAll, create, update,like, setToken }
