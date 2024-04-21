@@ -277,7 +277,7 @@ const App = () => {
         <div className="blog-info">
           <div className="blog-details">
             <span className="blog-title">{blog.title}</span>
-            {showDetails && <span className="blog-author">{blog.author}</span>}
+            <span className="blog-author">{blog.author}</span>
             {showDetails && <span className="blog-url">{blog.url}</span>}
           </div>
           <div className="blog-actions">
