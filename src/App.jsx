@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import Blog from './components/Blog'
+import Blogs from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import PropTypes from 'prop-types'
@@ -17,7 +17,6 @@ const App = () => {
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
   const [createBlogVisible, setCreateBlogVisible] = useState(false)
-  const [showDetails, setShowDetails] = useState(false)
   const [message, setMessage] = useState('message recevied.')
 
 
@@ -43,63 +42,15 @@ const App = () => {
       console.error('Error creating blog:', error.message)
     }
   }
-  /*
-  const addBlog = (event) => {
-    event.preventDefault();
-    const existBlog = blogs.find((blog) => blog.url === newUrl)
-    if (existBlog) {
-      const confirmation = window.confirm('This blog already exists, replace the old information with a new one?');
-      if (confirmation) {
-        const updateBlog = { ...existBlog, author: newAuthor, title: newTitle }
-        blogService
-          .update(existBlog._id, updateBlog)
-          .then(returnedBlog => {
-            const updateBlogs = blogs.map(blog => (blog._id === returnedBlog._id ? returnedBlog : blog))
-            setBlogs(updateBlogs)
-            setNewAuthor('')
-            setNewTitle('')
-            setLikes(0)
-          })
-          .catch(error => {
-            setMessage(`Information of ${newUrl} has been removed from server`)
-            setIsError(true)
-          })
-        setMessage(`${existBlog.url} information changed`)
-      }
-    }
-    else {
-      let idint;
-      if (blogs.length == 0) {
-        idint = 1
-      }
-      else {
-        idint = blogs.length + 1
-      }
-      let existId = blogs.find((blog) => blog._id == idint)
-      while (existId) {
-        idint = idint + 1
-        existId = blogs.find((blog) => blog._id == idint)
-      }
-      const newBlog = { title: newTitle, author: newAuthor, _id: idint.toString(), url: newUrl };
-      blogService
-        .create(newBlog)
-        .then(returnedBlog => {
-          setblogs(blogs.concat(returnedBlog))
-          setNewTitle('')
-          setNewAuthor('')
-          setNewUrl('')
-          setLikes(0)
-        })
-      setMessage(`${newTitle} blog added`)
-    }
-  }
-*/
+
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
       setUser(user)
       blogService.setToken(user.token)
+    } else {
+      setUser(null) // No token found, user is not authenticated
     }
   }, [])
 
@@ -262,34 +213,6 @@ const App = () => {
       <div className={className}>
         {message}
       </div>
-    )
-  }
-
-  const Blogs = ({ blog, handleLike, deleteBlog }) =>  {
-    console.log('Blog ID:', blog.id)
-
-    const toggleDetails = () => {
-      setShowDetails(!showDetails)
-    }
-
-    return (
-      <li className='blog'>
-        <div className="blog-info">
-          <div className="blog-details">
-            <span className="blog-title">{blog.title}</span>
-            <span className="blog-author">{blog.author}</span>
-            {showDetails && <span className="blog-url">{blog.url}</span>}
-          </div>
-          <div className="blog-actions">
-            {showDetails &&<button className="like-button" onClick={() => handleLike(blog._id)}>Like it</button>}
-            {showDetails &&<span className="likes-count">Likes: {blog.likes}</span>}
-            {showDetails &&<button className="delete-button" onClick={() => deleteBlog(blog._id)}>Delete</button>}
-            <button className="toggle-details-button" onClick={toggleDetails}>
-              {showDetails ? 'Hide Details' : 'Show Details'}
-            </button>
-          </div>
-        </div>
-      </li>
     )
   }
 
