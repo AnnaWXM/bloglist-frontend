@@ -6,7 +6,7 @@ import BlogForm from './BlogForm'
 
 test('calls event handler with correct details when a new blog is created', async () => {
   const mockCreateBlog = vi.fn()
-  render(<BlogForm addBLog={mockCreateBlog} />) // Pass mockCreateBlog as a prop
+  render(<BlogForm createBlog={mockCreateBlog} />) // Pass mockCreateBlog as a prop
 
   const titleInput = screen.getByLabelText('Title:')
   const authorInput = screen.getByLabelText('Author:')
