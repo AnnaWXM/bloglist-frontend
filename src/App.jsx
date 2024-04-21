@@ -124,6 +124,7 @@ const App = () => {
       <div>
         username
         <input
+          id='username'
           type="text"
           value={username}
           name="Username"
@@ -133,13 +134,14 @@ const App = () => {
       <div>
         password
         <input
+          id='password'
           type="password"
           value={password}
           name="Password"
           onChange={({ target }) => setPassword(target.value)}
         />
       </div>
-      <button type="submit">login</button>
+      <button id='login-button' type="submit">login</button>
     </form>
   )
 
@@ -151,13 +153,14 @@ const App = () => {
     return(
       <div>
         <div style={hideWhenVisible}>
-          <button onClick={() => setCreateBlogVisible(true)}>create blog</button>
+          <button id='showBlogForm' onClick={() => setCreateBlogVisible(true)}>create blog</button>
         </div>
         <div style={showWhenVisible}>
           <form onSubmit={addBlog}>
             <div>
               Title:
               <input
+                id='title'
                 type="text"
                 name="title"
                 value={newBlog.title}
@@ -167,6 +170,7 @@ const App = () => {
             <div>
               Author:
               <input
+                id='author'
                 type="text"
                 name="author"
                 value={newBlog.author}
@@ -176,13 +180,14 @@ const App = () => {
             <div>
               URL:
               <input
+                id='URL'
                 type="text"
                 name="url"
                 value={newBlog.url}
                 onChange={handleBlogChange}
               />
             </div>
-            <button type="submit">Create Blog</button>
+            <button id='createBlog' type="submit">Create Blog</button>
           </form>
           <button onClick={() => setCreateBlogVisible(false)}>cancel</button>
         </div>
@@ -230,7 +235,7 @@ const App = () => {
         loginForm() :
         <div>
           <p>{user.name} logged-in</p>
-          <button onClick={handleLogout}>Logout</button>
+          <button id='logout' onClick={handleLogout}>Logout</button>
           {blogForm()}
           <ul>
             {blogsToShow.map(blog =>

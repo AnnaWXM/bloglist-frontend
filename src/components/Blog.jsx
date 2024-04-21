@@ -18,10 +18,10 @@ const Blogs = ({ blog, handleLike, deleteBlog }) =>  {
           {showDetails && <span className="blog-url">{blog.url}</span>}
         </div>
         <div className="blog-actions">
-          {showDetails &&<button className="like-button" onClick={() => handleLike(blog._id)}>Like it</button>}
+          {showDetails &&<button id='likeButton' className="like-button" onClick={() => handleLike(blog._id)}>Like it</button>}
           {showDetails &&<span className="likes-count">Likes: {blog.likes}</span>}
-          {showDetails &&<button className="delete-button" onClick={() => deleteBlog(blog._id)}>Delete</button>}
-          <button className="toggle-details-button" onClick={toggleDetails}>
+          {showDetails &&<button id='deleteblog' className="delete-button" onClick={() => deleteBlog(blog._id)}>Delete</button>}
+          <button id='showDetails' className="toggle-details-button" onClick={toggleDetails}>
             {showDetails ? 'Hide Details' : 'Show Details'}
           </button>
         </div>
