@@ -87,36 +87,43 @@ const App = () => {
     setNewBlog({ ...newBlog, [name]: value })
   }
 
+  // Like blog mutation
+  const likeBlogMutation = useMutation(blogID => blogService.like(blogID), {
+    onSuccess: () => {
+      queryClient.invalidateQueries('blogs');
+      setMessage('Blog liked successfully.');
+    },
+    onError: error => {
+      setMessage(`Error liking blog: ${error.message}`);
+    },
+  });
+
   const handleLike = async (blogID) => {
     try {
-      const updatedBlog = await blogService.like(blogID)
-
-      setBlogs(prevBlogs =>
-        prevBlogs.map(blog =>
-          blog._id === blogID ? { ...blog, likes: updatedBlog.likes } : blog
-        )
-      )
+      await likeBlogMutation.mutateAsync(blogID);
     } catch (error) {
-      console.error('Error updating like:', error.message)
+      console.error('Error updating like:', error.message);
     }
-  }
+  };
 
-  const deleteBlog = (id) => {
-    const confirmation = window.confirm('Delete this blog?')
-    if (confirmation) {
-      blogService
-        .remove(id)
-        .then(() => {
-          setBlogs(blogs.filter(blog => blog.id !== id))
-        })
-      setMessage('the blog information deleted')
+  // Delete blog mutation
+  const deleteBlogMutation = useMutation(blogID => blogService.remove(blogID), {
+    onSuccess: () => {
+      queryClient.invalidateQueries('blogs');
+      setMessage('Blog deleted successfully.');
+    },
+    onError: error => {
+      setMessage(`Error deleting blog: ${error.message}`);
+    },
+  });
+
+  const deleteBlog = async (id) => {
+    try {
+      await deleteBlogMutation.mutateAsync(id);
+    } catch (error) {
+      console.error('Error deleting blog:', error.message);
     }
-  }
-
-  deleteBlog.propTypes = {
-    id:PropTypes.string.isRequired
-  }
-
+  };
 
   const loginForm = () => (
     <form onSubmit={handleLogin}>
