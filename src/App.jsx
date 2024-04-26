@@ -6,6 +6,11 @@ import PropTypes from 'prop-types'
 import { NotificationProvider, useNotification } from './components/Notification'
 import { useQuery, useMutation, useQueryClient } from 'react-query'
 import { UserProvider, useUser } from './components/User';
+import UserView from './components/UserView'
+import {
+  BrowserRouter as Router,
+  Routes, Route, Link, useParams, useNavigate
+} from 'react-router-dom'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -234,33 +239,57 @@ const App = () => {
     // eslint-disable-next-line no-undef
     : blogs.filter(blogs => blogs.title.toLowerCase().includes(filter.toLowerCase()))
 
+  const padding = {
+    padding: 5
+  }
+
   return (
     <div>
       <h1>Blogs</h1>
-      {message && <div>{message}</div>}
-      {notificationState.message && (
-        <div className={notificationState.type === 'error' ? 'error' : 'notification'}>
-          {notificationState.message}
-        </div>
-      )}
-      {user === null ?
-        loginForm() :
-        <div>
-          <p>{user.name} logged-in</p>
-          <button id='logout' onClick={handleLogout}>Logout</button>
-          {blogForm()}
-          <ul>
-            {blogsToShow.map(blog =>
-              <Blogs
-                key={blog.id}
-                blog={blog}
-                handleLike={() => handleLike(blog.id)}
-                deleteBlog={() => deleteBlog(blog.id)}
-              />
-            )}
-          </ul>
-        </div>
-      }
+
+      <Router>
+      <div>
+        <Link style={padding} to="/">home</Link>
+        <Link style={padding} to="/users">users</Link>
+      </div>
+
+      <Routes>
+        <Route path="/users" element={<UserView />} />
+        <Route
+            path="/"
+            element={
+              <>
+                {message && <div>{message}</div>}
+                {notificationState.message && (
+                  <div className={notificationState.type === 'error' ? 'error' : 'notification'}>
+                    {notificationState.message}
+                  </div>
+                )}
+                {user === null ?
+                  loginForm() :
+                  <div>
+                    <p>{user.name} logged-in</p>
+                    <button id='logout' onClick={handleLogout}>Logout</button>
+                    {blogForm()}
+                    <ul>
+                      {blogsToShow.map(blog =>
+                        <Blogs
+                          key={blog.id}
+                          blog={blog}
+                          handleLike={() => handleLike(blog.id)}
+                          deleteBlog={() => deleteBlog(blog.id)}
+                        />
+                      )}
+                    </ul>
+                  </div>
+                }
+              </>
+            }
+          />
+
+      </Routes>
+    </Router>
+
 
 
 
