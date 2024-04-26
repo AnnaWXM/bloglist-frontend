@@ -3,6 +3,7 @@ import Blogs from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import PropTypes from 'prop-types'
+import { NotificationProvider, useNotification } from './components/Notification';
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -18,6 +19,7 @@ const App = () => {
   const [user, setUser] = useState(null)
   const [createBlogVisible, setCreateBlogVisible] = useState(false)
   const [message, setMessage] = useState('message recevied.')
+  const { state: notificationState, showNotification, hideNotification } = useNotification()
 
 
   useEffect(() => {
@@ -194,7 +196,7 @@ const App = () => {
       </div>
     )
   }
-
+/*
   const Notification = ({ message, type }) => {
     const [isVisible, setIsVisible] = useState(false)
 
@@ -220,7 +222,7 @@ const App = () => {
       </div>
     )
   }
-
+*/
 
   const blogsToShow = showAll
     ? blogs
@@ -230,7 +232,11 @@ const App = () => {
   return (
     <div>
       <h1>Blogs</h1>
-      <Notification message={errorMessage} type="error" />
+      {notificationState.message && (
+        <div className={notificationState.type === 'error' ? 'error' : 'notification'}>
+          {notificationState.message}
+        </div>
+      )}
       {user === null ?
         loginForm() :
         <div>
