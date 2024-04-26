@@ -5,6 +5,7 @@ import loginService from './services/login'
 import PropTypes from 'prop-types'
 import { NotificationProvider, useNotification } from './components/Notification'
 import { useQuery, useMutation, useQueryClient } from 'react-query'
+import { UserProvider, useUser } from './components/User';
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -17,11 +18,11 @@ const App = () => {
 
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const [user, setUser] = useState(null)
   const [createBlogVisible, setCreateBlogVisible] = useState(false)
   const [message, setMessage] = useState('message recevied.')
   const { state: notificationState, showNotification, hideNotification } = useNotification()
   const queryClient = useQueryClient()
+  const { state: { user }, dispatch } = useUser();
 
 
   useQuery(blogs, async () => {
@@ -67,7 +68,7 @@ const App = () => {
       const user = await loginService.login({
         username, password,
       })
-      setUser(user)
+      dispatch({ type: 'LOGIN', payload: user });
       setErrorMessage(null)
       setMessage('Logged in successfully.')
       setUsername('')
@@ -79,7 +80,7 @@ const App = () => {
 
   const handleLogout = () => {
     setMessage('Logged out successfully.')
-    setUser(null)
+    dispatch({ type: 'LOGOUT' });
   }
 
   const handleBlogChange = (event) => {
