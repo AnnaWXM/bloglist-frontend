@@ -3,7 +3,8 @@ import Blogs from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import PropTypes from 'prop-types'
-import { NotificationProvider, useNotification } from './components/Notification';
+import { NotificationProvider, useNotification } from './components/Notification'
+import { useQuery, useMutation, useQueryClient } from 'react-query'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -20,31 +21,34 @@ const App = () => {
   const [createBlogVisible, setCreateBlogVisible] = useState(false)
   const [message, setMessage] = useState('message recevied.')
   const { state: notificationState, showNotification, hideNotification } = useNotification()
+  const queryClient = useQueryClient()
 
 
-  useEffect(() => {
-    blogService
-      .getAll().then(initialBlogs => {
-        const sortedBlogs = initialBlogs.sort((a, b) => b.likes - a.likes)
-        setBlogs(sortedBlogs)
-      })
-  }, [])
+  useQuery(blogs, async () => {
+    const response = await blogService.getAll();
+    return response;
+  });
 
-  const addBlog = async (event) => {
-    event.preventDefault()
+  const createBlogMutation = useMutation(newBlog => blogService.create(newBlog), {
+    onSuccess: () => {
+      queryClient.invalidateQueries('blogs');
+      setMessage('Blog created successfully.');
+    },
+    onError: error => {
+      setMessage(`Error creating blog: ${error.message}`);
+    },
+  });
+
+  const addBlog = async event => {
+    event.preventDefault();
     try {
-      const createdBlog = await blogService.create(newBlog)
-      setBlogs([...blogs, createdBlog])
-      setNewBlog({
-        title: '',
-        author: '',
-        url: ''
-      })
+      await createBlogMutation.mutateAsync(newBlog);
+      setCreateBlogVisible(false);
     } catch (error) {
-      console.error('Error creating blog:', error.message)
+      console.error('Error creating blog:', error.message);
     }
-  }
-
+  };
+/*
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
     if (loggedUserJSON) {
@@ -55,7 +59,7 @@ const App = () => {
       setUser(null) // No token found, user is not authenticated
     }
   }, [])
-
+*/
   const handleLogin = async (event) => {
     event.preventDefault()
 
@@ -63,24 +67,18 @@ const App = () => {
       const user = await loginService.login({
         username, password,
       })
-      window.localStorage.setItem(
-        'loggedBlogappUser', JSON.stringify(user)
-      )
-      blogService.setToken(user.token)
       setUser(user)
       setErrorMessage(null)
+      setMessage('Logged in successfully.')
       setUsername('')
       setPassword('')
     } catch (exception) {
       setErrorMessage('Wrong username or password')
-      setTimeout(() => {
-        setErrorMessage(null)
-      }, 5000)
     }
   }
 
   const handleLogout = () => {
-    window.localStorage.removeItem('loggedBlogappUser')
+    setMessage('Logged out successfully.')
     setUser(null)
   }
 
@@ -90,7 +88,6 @@ const App = () => {
   }
 
   const handleLike = async (blogID) => {
-
     try {
       const updatedBlog = await blogService.like(blogID)
 
@@ -232,6 +229,7 @@ const App = () => {
   return (
     <div>
       <h1>Blogs</h1>
+      {message && <div>{message}</div>}
       {notificationState.message && (
         <div className={notificationState.type === 'error' ? 'error' : 'notification'}>
           {notificationState.message}
