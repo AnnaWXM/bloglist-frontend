@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import userService from '../services/users';
+import { Link } from 'react-router-dom'
 
 const UserView = () => {
   const [users, setUsers] = useState([]);
@@ -35,9 +36,8 @@ const UserView = () => {
       <ul>
         {users.map(user => (
           <li key={user.id}>
-            <div>Name: {user.name}</div>
+            <Link to={`/users/${user.id}`}>{user.name}</Link>
             <div>Email: {user.email}</div>
-            {/* Add more user information fields here */}
           </li>
         ))}
       </ul>
@@ -45,4 +45,4 @@ const UserView = () => {
   );
 };
 
-export default UserView;
+export default UserView;ß

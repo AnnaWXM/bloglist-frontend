@@ -7,6 +7,10 @@ import { NotificationProvider, useNotification } from './components/Notification
 import { useQuery, useMutation, useQueryClient } from 'react-query'
 import { UserProvider, useUser } from './components/User';
 import UserView from './components/UserView'
+import UserPostsView from './components/UserPostView'
+import BlogListView from './components/BlogListView'
+import BlogPostView from './components/BlogPostView'
+import NavigationMenu from './components/NavigationMenu'
 import {
   BrowserRouter as Router,
   Routes, Route, Link, useParams, useNavigate
@@ -248,6 +252,7 @@ const App = () => {
       <h1>Blogs</h1>
 
       <Router>
+      <NavigationMenu handleLogout={ handleLogout } />
       <div>
         <Link style={padding} to="/">home</Link>
         <Link style={padding} to="/users">users</Link>
@@ -255,6 +260,9 @@ const App = () => {
 
       <Routes>
         <Route path="/users" element={<UserView />} />
+        <Route path="/users/:userId" element={<UserPostsView />} />
+        <Route path="/blogs" element={<BlogListView />} />
+        <Route path="/blog/:blogId" element={<BlogPostView />} />
         <Route
             path="/"
             element={
