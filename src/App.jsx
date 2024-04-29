@@ -58,18 +58,7 @@ const App = () => {
       console.error('Error creating blog:', error.message);
     }
   };
-/*
-  useEffect(() => {
-    const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
-    if (loggedUserJSON) {
-      const user = JSON.parse(loggedUserJSON)
-      setUser(user)
-      blogService.setToken(user.token)
-    } else {
-      setUser(null) // No token found, user is not authenticated
-    }
-  }, [])
-*/
+
   const handleLogin = async (event) => {
     event.preventDefault()
 
@@ -210,33 +199,6 @@ const App = () => {
       </div>
     )
   }
-/*
-  const Notification = ({ message, type }) => {
-    const [isVisible, setIsVisible] = useState(false)
-
-    useEffect(() => {
-      if (message) {
-        setIsVisible(true)
-        const timer = setTimeout(() => {
-          setIsVisible(false)
-        }, 3000)
-        return () => clearTimeout(timer)
-      }
-    }, [message])
-
-    if (!isVisible) {
-      return null
-    }
-
-    const className = type === 'error' ? 'error' : 'notification'
-
-    return (
-      <div className={className}>
-        {message}
-      </div>
-    )
-  }
-*/
 
   const blogsToShow = showAll
     ? blogs
@@ -252,11 +214,7 @@ const App = () => {
       <h1>Blogs</h1>
 
       <Router>
-      <NavigationMenu handleLogout={ handleLogout } />
-      <div>
-        <Link style={padding} to="/">home</Link>
-        <Link style={padding} to="/users">users</Link>
-      </div>
+      {user === null ? null : <NavigationMenu handleLogout={ handleLogout } />}
 
       <Routes>
         <Route path="/users" element={<UserView />} />
@@ -297,9 +255,6 @@ const App = () => {
 
       </Routes>
     </Router>
-
-
-
 
     </div>
   )

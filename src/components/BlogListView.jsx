@@ -1,5 +1,5 @@
 import React from 'react';
-import Blogs from './Blogs';
+import Blogs from './Blog';
 
 const BlogListView = ({ blogPosts, handleLike, deleteBlog }) => {
   return (
